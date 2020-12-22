@@ -1,0 +1,28 @@
+name: swipe_detector_example
+version: 0.0.1-nullsafety
+
+publish_to: "none"
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  swipe_detector: ^0.0.1-nullsafety
+
+  # cupertino_icons: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+dependency_overrides:
+  swipe_detector:
+    path: ../
+
+flutter:
+  uses-material-design: true

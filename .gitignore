@@ -1,0 +1,13 @@
+# Dart: Pub
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+## IDE: JetBrains
+.idea/
+*.iml
+
+## Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
