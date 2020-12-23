@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swipe_detector/swipe_detector.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,17 +10,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Swipe Detector Demo',
+      home: MyHomePage(title: 'Swipe Detector Demo'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -28,6 +26,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late GlobalKey _buttonKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _buttonKey = LabeledGlobalKey('button');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,9 +44,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              onPressed: () {},
-              child: Text('Button'),
+            SwipeVerticalDetector(
+              behavior: HitTestBehavior.translucent,
+              beforeSwipeStart: (details) {
+                print(details);
+                return true;
+              },
+              onSwipe: (details) {
+                print(details);
+              },
+              child: RaisedButton(
+                key: _buttonKey,
+                onPressed: () {
+                  print('onPressed');
+                },
+                child: Text('Button'),
+              ),
             ),
           ],
         ),
