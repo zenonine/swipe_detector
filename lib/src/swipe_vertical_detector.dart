@@ -12,7 +12,7 @@ class SwipeVerticalDetails {
     return globalDy - initialGlobalDy;
   }
 
-  get direction {
+  SwipeVerticalDirection? get direction {
     if (distance == 0) {
       return null;
     }
@@ -47,23 +47,27 @@ class SwipeVerticalDetails {
       '}';
 }
 
-typedef SwipeVerticalCallback = void Function(SwipeVerticalDetails details);
-
-typedef BeforeSwipeStartCallback = bool Function(SwipeVerticalDetails details);
+typedef BeforeSwipeVerticalStartCallback = bool Function(
+    SwipeVerticalDetails details);
+typedef OnSwipeVerticalCallback = void Function(SwipeVerticalDetails details);
+typedef AfterSwipeVerticalEndCallback = void Function(
+    SwipeVerticalDetails details);
 
 class SwipeVerticalDetector extends StatelessWidget {
   final Widget child;
 
   /// return true to enable onSwipe events. Otherwise, return false to skip onSwipe events.
   /// When true is returned, this callback will not be triggered anymore.
-  final BeforeSwipeStartCallback? beforeSwipeStart;
-  final SwipeVerticalCallback? onSwipe;
+  final BeforeSwipeVerticalStartCallback? beforeSwipeStart;
+  final OnSwipeVerticalCallback? onSwipe;
+  final AfterSwipeVerticalEndCallback? afterSwipeEnd;
   final HitTestBehavior? behavior;
 
   SwipeVerticalDetector({
     required this.child,
     this.beforeSwipeStart,
     this.onSwipe,
+    this.afterSwipeEnd,
     this.behavior,
   });
 
@@ -83,7 +87,7 @@ class SwipeVerticalDetector extends StatelessWidget {
       onVerticalDragStart: (details) {
         startDetails = details;
 
-        var swipeVerticalDetails = SwipeVerticalDetails(
+        final swipeVerticalDetails = SwipeVerticalDetails(
           initialGlobalDy:
               (downDetails?.globalPosition ?? startDetails?.globalPosition)!.dy,
           initialLocalDy:
@@ -99,8 +103,11 @@ class SwipeVerticalDetector extends StatelessWidget {
       },
       onVerticalDragUpdate: (details) {
         updateDetails = details;
+        if (downDetails == null && startDetails == null) {
+          return;
+        }
 
-        var swipeVerticalDetails = SwipeVerticalDetails(
+        final swipeVerticalDetails = SwipeVerticalDetails(
           initialGlobalDy:
               (downDetails?.globalPosition ?? startDetails?.globalPosition)!.dy,
           initialLocalDy:
@@ -115,9 +122,9 @@ class SwipeVerticalDetector extends StatelessWidget {
         }
       },
       onVerticalDragEnd: (details) {
-        var globalPosition =
+        final globalPosition =
             (updateDetails?.globalPosition ?? startDetails?.globalPosition)!;
-        var swipeVerticalDetails = SwipeVerticalDetails(
+        final swipeVerticalDetails = SwipeVerticalDetails(
           initialGlobalDy:
               (downDetails?.globalPosition ?? startDetails?.globalPosition)!.dy,
           initialLocalDy:
@@ -137,12 +144,13 @@ class SwipeVerticalDetector extends StatelessWidget {
           updateDetails = null;
 
           onSwipe?.call(swipeVerticalDetails);
+          afterSwipeEnd?.call(swipeVerticalDetails);
         }
       },
     );
   }
 
-  bool checkTrigger(SwipeVerticalDetails details) {
+  bool checkTrigger(final SwipeVerticalDetails details) {
     return beforeSwipeStart?.call(details) ?? true;
   }
 }
